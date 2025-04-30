@@ -1,0 +1,57 @@
+# Help file
+HELP.md
+
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Logs
+*.log
+
+# Class files
+*.class
+
+# IDEs
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+bin/
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# VS Code
+.vscode/
+
+# Test coverage
+coverage/
+jacoco*.exec
+
+# Env files
+.env
+*.env
+application-local.properties
+application-dev.properties
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
