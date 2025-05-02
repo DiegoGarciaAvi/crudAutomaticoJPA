@@ -1,6 +1,7 @@
 package com.crud_automatico.Service;
 
 import com.crud_automatico.Persistence.Proyection.ColumTableProyection;
+import com.crud_automatico.Persistence.Proyection.ForeingKeyTableProyection;
 import com.crud_automatico.Persistence.Repository.ColumTableRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,10 @@ public class ColumTableService {
 
     public List<ColumTableProyection> getAllColumTable(String nameTable) {
         return columTableRepository.findAllByTablaId(nameTable);
+    }
+
+    public List<ForeingKeyTableProyection> getAllForeingKeyTable(String nameTable) {
+        return columTableRepository.findAllByTablaIdForeingKey(nameTable);
     }
 
 }

@@ -1,6 +1,7 @@
 package com.crud_automatico.Application;
 
 import com.crud_automatico.Persistence.Proyection.ColumTableProyection;
+import com.crud_automatico.Persistence.Proyection.ForeingKeyTableProyection;
 import com.crud_automatico.Service.ColumTableService;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,8 @@ public class CreateFiles {
         String entityName = tableName.toUpperCase().charAt(0)+tableName.substring(1).toLowerCase() + "Entity";
         String typeIdEntity = "";
         List<ColumTableProyection> columTableEntities= columTableService.getAllColumTable(tableName);
+        List<ForeingKeyTableProyection> foreingKeyTableEntities= columTableService.getAllForeingKeyTable(tableName);
+        //NOTE PROCESO PARA RELACIONAR LAS LLAVES FORANEAS
         String path="src/main/java/com/crud_automatico/Persistence/Entity/" + entityName + ".java";
 
         try {
@@ -38,6 +41,7 @@ public class CreateFiles {
                         "import lombok.Getter;\n" +
                         "import lombok.NoArgsConstructor;\n" +
                         "import lombok.Setter;\n"+
+                        "import java.time.LocalDateTime;\n" +
                         "@Entity\n" +
                         "@Table(name = \""+tableName+"\" )\n" +
                         "@Setter\n" +
@@ -69,6 +73,8 @@ public class CreateFiles {
                         unionParts.append(parts[i].toUpperCase().charAt(0)).append(parts[i].substring(1).toLowerCase());
                     }
                     nameColum = parts[0]+ unionParts;
+                }else{
+                    file.write("\n\t@Column(name = \""+nameColum+"\")");
                 }
 
                 if (typeColum.equals("int2") || typeColum.equals("int4") || typeColum.equals("int8")) {
@@ -98,7 +104,7 @@ public class CreateFiles {
             file.write("\n }");
             file.close();
 
-            createRepository(entityName,typeIdEntity);
+            //createRepository(entityName,typeIdEntity);
 
         } catch (IOException e) {
             throw new RuntimeException(e);
