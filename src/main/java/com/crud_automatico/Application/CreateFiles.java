@@ -179,17 +179,20 @@ public class CreateFiles {
                             "\t\ttry{" +
                             "\n\t\t\treturn "+ objetName+".save("+objetNameMethods+");\n" +
                             "\t\t} catch (RuntimeException e) {\n"+
-                            "\t\t\tthrow new RuntimeException(e);"+
+                            "\t\t\tthrow new RuntimeException(\"Error saving \"+e.getMessage() );"+
                             "\n\t\t}" +
                             "\n\t}\n");
 
-            file.write("\n\tpublic "+entityName+ " update("+entityName+" "+objetNameMethods+"){\n" +
+            file.write("\n\tpublic "+entityName+ " update("+entityName+" "+objetNameMethods+"){" +
                             "\t\ttry {" +
-                            "\t\treturn "+ objetName+".save("+objetNameMethods+");\n" +
-                            "\t\t} catch (RuntimeException e) {\n"+
-                            "\t\t\tthrow new RuntimeException(\"Error updating "+objetNameMethods+"\");"+
+                            "\n\t\t\tif (!"+objetName+".existsById("+objetNameMethods+".getId())) {" +
+                            "\n\t\t\t\tthrow new RuntimeException(\"Id does not exist\");" +
+                            "\n\t\t\t}" +
+                            "\n\t\t\treturn "+ objetName+".save("+objetNameMethods+");" +
+                            "\n\t\t} catch (RuntimeException e) {"+
+                            "\n\t\t\tthrow new RuntimeException(\"Error updating \"+e.getMessage() );"+
                             "\n\t\t}" +
-                            "\t}\n");
+                            "\n\t}\n");
 
             file.write("\n\tpublic boolean delete("+typeIdEntity+" id){\n" +
                             "\t\ttry{" +
@@ -236,6 +239,7 @@ public class CreateFiles {
                             "import com.crud_automatico.Persistence.Entity."+entityName+";\n" +
                             "import com.crud_automatico.Service."+serviceName+";\n" +
                             "import org.springframework.beans.factory.annotation.Autowired;\n" +
+                            "import org.springframework.http.HttpStatus;\n" +
                             "import org.springframework.http.ResponseEntity;\n" +
                             "import org.springframework.web.bind.annotation.*;\n" +
                             "import java.util.List;\n\n" +
@@ -255,15 +259,23 @@ public class CreateFiles {
                             "\n\t}\n");
 
             file.write("\n\t@PostMapping\n" +
-                            "\tpublic ResponseEntity<"+entityName+"> save(@RequestBody "+entityName+" "+objetNameMethods+"){\n" +
-                            "\n\t\t"+entityName+" "+objetNameMethods+"Save = "+objetName+".save("+objetNameMethods+");\n" +
-                            "\n\t\treturn ResponseEntity.ok("+objetNameMethods+"Save);\n" +
+                            "\tpublic ResponseEntity<?> save(@RequestBody "+entityName+" "+objetNameMethods+"){\n" +
+                            "\n\t\ttry {\n" +
+                            "\n\t\t\t"+entityName+" "+objetNameMethods+"Save = "+objetName+".save("+objetNameMethods+");\n" +
+                            "\n\t\t\treturn ResponseEntity.ok("+objetNameMethods+"Save);\n" +
+                            "\n\t\t} catch (RuntimeException e) {\n" +
+                            "\n\t\t\treturn ResponseEntity.status(HttpStatus.BAD_REQUEST).body(\"Error: \" + e.getMessage());\n" +
+                            "\n\t\t}\n" +
                             "\n\t}\n");
 
             file.write("\n\t@PutMapping\n" +
-                            "\tpublic ResponseEntity<"+entityName+"> update(@RequestBody "+entityName+" "+objetNameMethods+"){\n" +
-                            "\n\t\t"+entityName+" "+objetNameMethods+"Update = "+objetName+".update("+objetNameMethods+");\n" +
-                            "\n\t\treturn ResponseEntity.ok("+objetNameMethods+"Update);\n" +
+                            "\tpublic ResponseEntity<?> update(@RequestBody "+entityName+" "+objetNameMethods+"){\n" +
+                            "\n\t\ttry {\n" +
+                            "\n\t\t\t"+entityName+" "+objetNameMethods+"Update = "+objetName+".update("+objetNameMethods+");\n" +
+                            "\n\t\t\treturn ResponseEntity.ok("+objetNameMethods+"Update);\n" +
+                            "\n\t\t} catch (RuntimeException e) {\n" +
+                            "\n\t\t\treturn ResponseEntity.status(HttpStatus.BAD_REQUEST).body(\"Error: \" + e.getMessage());\n" +
+                            "\n\t\t}\n" +
                             "\n\t}\n");
 
             file.write("\n\t@DeleteMapping(\"/{id}\")\n" +
