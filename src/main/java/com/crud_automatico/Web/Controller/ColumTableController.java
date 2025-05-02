@@ -1,4 +1,4 @@
-package com.crud_automatico.web.controller;
+package com.crud_automatico.Web.Controller;
 
 import com.crud_automatico.Persistence.Proyection.ColumTableProyection;
 import com.crud_automatico.Service.ColumTableService;
