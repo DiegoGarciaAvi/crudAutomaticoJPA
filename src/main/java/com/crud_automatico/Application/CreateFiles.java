@@ -25,7 +25,6 @@ public class CreateFiles {
         String typeIdEntity = "";
         List<ColumTableProyection> columTableEntities= columTableService.getAllColumTable(tableName);
         List<ForeingKeyTableProyection> foreingKeyTableEntities= columTableService.getAllForeingKeyTable(tableName);
-        //NOTE PROCESO PARA RELACIONAR LAS LLAVES FORANEAS
         String path="src/main/java/com/crud_automatico/Persistence/Entity/" + entityName + ".java";
 
         try {
@@ -47,15 +46,16 @@ public class CreateFiles {
                         "@Setter\n" +
                         "@Getter\n" +
                         "@NoArgsConstructor\n" +
-                        "public class " + entityName+" {\n"//CAMBIAR NOMBRE DE LA CLASE
+                        "public class " + entityName+" {\n"
                     );
 
             for (ColumTableProyection columTableEntity : columTableEntities) {
 
                 String nameColum = columTableEntity.getColumTableName();
                 String typeColum = columTableEntity.getUdtName();
+                boolean isForeingKey = !foreingKeyTableEntities.isEmpty();
 
-                if(nameColum.equals("id") && (typeColum.equals("int2") || typeColum.equals("int4")) || typeColum.equals("int8")){
+                if(nameColum.equals("id") && (typeColum.equals("int2") || typeColum.equals("int4") || typeColum.equals("int8"))){
                     file.write("\n\t@Id");
                     file.write("\n\t@GeneratedValue(strategy = GenerationType.AUTO)");
                     typeIdEntity = "Integer";
@@ -64,7 +64,7 @@ public class CreateFiles {
                     typeIdEntity = "String ";
                 }
 
-                if(nameColum.contains("_")){
+                if(nameColum.contains("_") && !isForeingKey){
 
                     file.write("\n\t@Column(name = \""+nameColum+"\")");
                     String[] parts = nameColum.split("_");
@@ -73,7 +73,7 @@ public class CreateFiles {
                         unionParts.append(parts[i].toUpperCase().charAt(0)).append(parts[i].substring(1).toLowerCase());
                     }
                     nameColum = parts[0]+ unionParts;
-                }else{
+                } else{
                     file.write("\n\t@Column(name = \""+nameColum+"\")");
                 }
 
@@ -99,12 +99,25 @@ public class CreateFiles {
 
                 file.write("\n\tprivate " + typeColum + " " + nameColum + ";\n");
 
+                if(isForeingKey){
+                    for (ForeingKeyTableProyection foreingKey : foreingKeyTableEntities) {
+                        if(foreingKey.getForeingColumn().equals(nameColum)){
+
+                            String nameEntityReference=foreingKey.getReferenceTable().toUpperCase().charAt(0)+foreingKey.getReferenceTable().substring(1).toLowerCase() + "Entity";
+                            file.write("\n\t@ManyToOne"+
+                                            "\n\t@JoinColumn(name = \""+nameColum+"\",columnDefinition = \""+nameColum+"\",insertable = false,updatable = false)"+
+                                            "\n\tprivate "+nameEntityReference+" "+foreingKey.getReferenceTable()+";\n"
+                            );
+                        }
+                    }
+                }
+
             }
 
             file.write("\n }");
             file.close();
 
-            //createRepository(entityName,typeIdEntity);
+            createRepository(entityName,typeIdEntity);
 
         } catch (IOException e) {
             throw new RuntimeException(e);
