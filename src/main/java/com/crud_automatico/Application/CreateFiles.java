@@ -194,6 +194,14 @@ public class CreateFiles {
                             "\t\treturn "+ objetName+".findAll();\n" +
                             "\t}\n");
 
+            file.write("\n\tpublic "+entityName+" getById("+typeIdEntity+" id){" +
+                            "\n\t\ttry{" +
+                            "\n\t\t\treturn "+ objetName+".findById(id).orElseThrow(() -> new RuntimeException(\"Id not found\"));" +
+                            "\n\t\t} catch (RuntimeException e) {" +
+                            "\n\t\t\tthrow new RuntimeException(\"Error getting by id\"+e.getMessage() );"+
+                            "\n\t\t}" +
+                            "\n\t}\n");
+
             file.write("\n\tpublic "+entityName+ " save("+entityName+" "+objetNameMethods+"){\n" +
                             "\t\ttry{" +
                             "\n\t\t\treturn "+ objetName+".save("+objetNameMethods+");\n" +
@@ -275,6 +283,16 @@ public class CreateFiles {
                             "\tpublic ResponseEntity<List<"+entityName+">> getAll(){\n" +
                             "\n\t\tList<"+entityName+"> "+objetNameMethods+" = "+objetName+".getAll();\n" +
                             "\n\t\treturn ResponseEntity.ok("+objetNameMethods+");\n" +
+                            "\n\t}\n");
+
+            file.write("\n\t@GetMapping(\"/{id}\")\n" +
+                            "\tpublic ResponseEntity<?> getById(@PathVariable "+typeIdEntity+" id){\n" +
+                            "\n\t\ttry {\n" +
+                            "\n\t\t\t"+entityName+" "+objetNameMethods+" = "+objetName+".getById(id);\n" +
+                            "\n\t\t\treturn ResponseEntity.ok("+objetNameMethods+");\n" +
+                            "\n\t\t} catch (RuntimeException e) {\n" +
+                            "\n\t\t\treturn ResponseEntity.status(HttpStatus.BAD_REQUEST).body(\"Error: \" + e.getMessage());\n" +
+                            "\n\t\t}\n" +
                             "\n\t}\n");
 
             file.write("\n\t@PostMapping\n" +
