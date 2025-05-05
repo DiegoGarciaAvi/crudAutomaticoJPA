@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -22,10 +23,21 @@ public class CreateFiles {
     public void createEntity(String tableName) {
 
         String entityName = tableName.toUpperCase().charAt(0)+tableName.substring(1).toLowerCase() + "Entity";
+        if(tableName.contains("_")){
+            String[] partsTableName=tableName.split("_");
+            StringBuilder unionPartsTableName=new StringBuilder();
+            for (String str : partsTableName) {
+                unionPartsTableName.append(str.toUpperCase().charAt(0)).append(str.substring(1).toLowerCase());
+            }
+            entityName=unionPartsTableName+"Entity";
+
+        }
+
         String typeIdEntity = "";
         List<ColumTableProyection> columTableEntities= columTableService.getAllColumTable(tableName);
         List<ForeingKeyTableProyection> foreingKeyTableEntities= columTableService.getAllForeingKeyTable(tableName);
         String path="src/main/java/com/crud_automatico/Persistence/Entity/" + entityName + ".java";
+        boolean isForeingKey = !foreingKeyTableEntities.isEmpty();
 
         try {
 
@@ -53,8 +65,7 @@ public class CreateFiles {
 
                 String nameColum = columTableEntity.getColumTableName();
                 String typeColum = columTableEntity.getUdtName();
-                boolean isForeingKey = !foreingKeyTableEntities.isEmpty();
-
+                //NOTE BUSCAR SI ES EL ID
                 if(nameColum.equals("id") && (typeColum.equals("int2") || typeColum.equals("int4") || typeColum.equals("int8"))){
                     file.write("\n\t@Id");
                     file.write("\n\t@GeneratedValue(strategy = GenerationType.AUTO)");
@@ -64,7 +75,7 @@ public class CreateFiles {
                     typeIdEntity = "String ";
                 }
 
-                if(nameColum.contains("_") && !isForeingKey){
+                if(nameColum.contains("_")){
 
                     file.write("\n\t@Column(name = \""+nameColum+"\")");
                     String[] parts = nameColum.split("_");
@@ -93,25 +104,54 @@ public class CreateFiles {
                     typeColum="Date";
                 }
 
-                if(typeColum.equals("timestamp") || typeColum.equals("timestamptz")){
+                if(typeColum.equals("timestamp") || typeColum.equals("timestamptz")|| typeColum.equals("time")){
                     typeColum="LocalDateTime";
+                }
+
+                if(typeColum.equals("bool")){
+                    typeColum="Boolean";
                 }
 
                 file.write("\n\tprivate " + typeColum + " " + nameColum + ";\n");
 
                 if(isForeingKey){
                     for (ForeingKeyTableProyection foreingKey : foreingKeyTableEntities) {
-                        if(foreingKey.getForeingColumn().equals(nameColum)){
 
-                            String nameEntityReference=foreingKey.getReferenceTable().toUpperCase().charAt(0)+foreingKey.getReferenceTable().substring(1).toLowerCase() + "Entity";
+                        String foreingKeyName = columTableEntity.getColumTableName();
+
+                        if(foreingKey.getForeingColumn().equals(foreingKeyName)){
+
+                            String nameForeingKey=foreingKeyName;
+                            String nameEntityReference="";
+
+                            if(foreingKeyName.contains("_")){
+                                String[] partsFk= foreingKeyName.split("_");
+                                StringBuilder unionPartsFk = new StringBuilder();
+                                for (int i= 1; i< partsFk.length ;i++) {
+                                    unionPartsFk.append(partsFk[i].toUpperCase().charAt(0)).append(partsFk[i].substring(1).toLowerCase());
+                                }
+                                nameForeingKey=partsFk[0]+unionPartsFk+"Fk";
+                            }
+
+                            String[] partsEntity= foreingKey.getReferenceTable().split("_");
+                            StringBuilder unionPartsEntity = new StringBuilder();
+                            for (String str : partsEntity) {
+                                unionPartsEntity.append(str.toUpperCase().charAt(0)).append(str.substring(1).toLowerCase());
+                            }
+                            nameEntityReference = unionPartsEntity + "Entity";
+
                             file.write("\n\t@ManyToOne"+
-                                            "\n\t@JoinColumn(name = \""+nameColum+"\",columnDefinition = \""+nameColum+"\",insertable = false,updatable = false)"+
-                                            "\n\tprivate "+nameEntityReference+" "+foreingKey.getReferenceTable()+";\n"
+                                            "\n\t@JoinColumn(name = \""+foreingKeyName+"\",columnDefinition = \""+foreingKeyName+"\",insertable = false,updatable = false)"+
+                                            "\n\tprivate "+nameEntityReference+" "+nameForeingKey+";\n"
                             );
                         }
                     }
                 }
 
+            }
+
+            if(typeIdEntity.isEmpty()){
+                throw new RuntimeException("The table does not have a primary key");
             }
 
             file.write("\n }");
@@ -291,7 +331,7 @@ public class CreateFiles {
                             "\n\t\t\t"+entityName+" "+objetNameMethods+" = "+objetName+".getById(id);\n" +
                             "\n\t\t\treturn ResponseEntity.ok("+objetNameMethods+");\n" +
                             "\n\t\t} catch (RuntimeException e) {\n" +
-                            "\n\t\t\treturn ResponseEntity.status(HttpStatus.BAD_REQUEST).body(\"Error: \" + e.getMessage());\n" +
+                            "\n\t\t\treturn ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());\n" +
                             "\n\t\t}\n" +
                             "\n\t}\n");
 
@@ -301,7 +341,7 @@ public class CreateFiles {
                             "\n\t\t\t"+entityName+" "+objetNameMethods+"Save = "+objetName+".save("+objetNameMethods+");\n" +
                             "\n\t\t\treturn ResponseEntity.ok("+objetNameMethods+"Save);\n" +
                             "\n\t\t} catch (RuntimeException e) {\n" +
-                            "\n\t\t\treturn ResponseEntity.status(HttpStatus.BAD_REQUEST).body(\"Error: \" + e.getMessage());\n" +
+                            "\n\t\t\treturn ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());\n" +
                             "\n\t\t}\n" +
                             "\n\t}\n");
 
@@ -311,7 +351,7 @@ public class CreateFiles {
                             "\n\t\t\t"+entityName+" "+objetNameMethods+"Update = "+objetName+".update("+objetNameMethods+");\n" +
                             "\n\t\t\treturn ResponseEntity.ok("+objetNameMethods+"Update);\n" +
                             "\n\t\t} catch (RuntimeException e) {\n" +
-                            "\n\t\t\treturn ResponseEntity.status(HttpStatus.BAD_REQUEST).body(\"Error: \" + e.getMessage());\n" +
+                            "\n\t\t\treturn ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());\n" +
                             "\n\t\t}\n" +
                             "\n\t}\n");
 
