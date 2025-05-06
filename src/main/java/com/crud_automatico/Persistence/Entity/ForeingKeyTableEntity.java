@@ -11,5 +11,6 @@ public class ForeingKeyTableEntity {
     private String foreingColumn;
     private String referenceTable;
     private String referenceColumn;
+    private String constraintType;
 
 }

@@ -35,7 +35,19 @@ public class CreateFiles {
 
         String typeIdEntity = "";
         List<ColumTableProyection> columTableEntities= columTableService.getAllColumTable(tableName);
-        List<ForeingKeyTableProyection> foreingKeyTableEntities= columTableService.getAllForeingKeyTable(tableName);
+
+        List<ForeingKeyTableProyection> allKeys= columTableService.getAllForeingKeyTable(tableName);
+        ArrayList<ForeingKeyTableProyection> primaryKeyTableEntities= new ArrayList<>();
+        ArrayList<ForeingKeyTableProyection> foreingKeyTableEntities= new ArrayList<>();
+
+        for (ForeingKeyTableProyection foreingKey : allKeys) {
+            if(foreingKey.getConstraintType().equals("FOREIGN KEY")){
+                foreingKeyTableEntities.add(foreingKey);
+            } else if (foreingKey.getConstraintType().equals("PRIMARY KEY")) {
+                primaryKeyTableEntities.add(foreingKey);
+            }
+        }
+
         String path="src/main/java/com/crud_automatico/Persistence/Entity/" + entityName + ".java";
         boolean isForeingKey = !foreingKeyTableEntities.isEmpty();
 
@@ -65,14 +77,18 @@ public class CreateFiles {
 
                 String nameColum = columTableEntity.getColumTableName();
                 String typeColum = columTableEntity.getUdtName();
-                //NOTE BUSCAR SI ES EL ID
-                if(nameColum.equals("id") && (typeColum.equals("int2") || typeColum.equals("int4") || typeColum.equals("int8"))){
-                    file.write("\n\t@Id");
-                    file.write("\n\t@GeneratedValue(strategy = GenerationType.AUTO)");
-                    typeIdEntity = "Integer";
-                } else if (nameColum.equals("id") && (typeColum.equals("varchar") )) {
-                    file.write("\n\t@Id");
-                    typeIdEntity = "String ";
+
+                for (ForeingKeyTableProyection primaryKey: primaryKeyTableEntities){
+                    if(primaryKey.getForeingColumn().equals(nameColum)){
+                        if(typeColum.equals("int2") || typeColum.equals("int4") || typeColum.equals("int8")){
+                            file.write("\n\t@Id");
+                            file.write("\n\t@GeneratedValue(strategy = GenerationType.AUTO)");
+                            typeIdEntity = "Integer";
+                        } else if (typeColum.equals("varchar")) {
+                            file.write("\n\t@Id");
+                            typeIdEntity = "String ";
+                        }
+                    }
                 }
 
                 if(nameColum.contains("_")){

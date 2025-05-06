@@ -7,4 +7,5 @@ public interface ForeingKeyTableProyection {
     String getForeingColumn();
     String getReferenceTable();
     String getReferenceColumn();
+    String getConstraintType();
 }

@@ -24,7 +24,8 @@ public interface ColumTableRepository extends JpaRepository<ColumTableEntity,Lon
             "    tc.table_name AS ForeingTable, \n" +
             "    kcu.column_name AS ForeingColumn, \n" +
             "    ccu.table_name AS ReferenceTable, \n" +
-            "    ccu.column_name AS ReferenceColumn \n" +
+            "    ccu.column_name AS ReferenceColumn, \n" +
+            "    tc.constraint_type AS ConstraintType \n" +
             "FROM " +
             "    information_schema.table_constraints AS tc \n" +
             "JOIN " +
@@ -34,8 +35,7 @@ public interface ColumTableRepository extends JpaRepository<ColumTableEntity,Lon
             "    information_schema.constraint_column_usage AS ccu \n" +
             "    ON ccu.constraint_name = tc.constraint_name \n" +
             "WHERE " +
-            "    constraint_type = 'FOREIGN KEY' \n" +
-            "    AND tc.constraint_schema = 'public' \n" +
+            "    tc.constraint_schema = 'public' \n" +
             "    AND tc.table_name=:nameTable;", nativeQuery = true)
     List<ForeingKeyTableProyection> findAllByTablaIdForeingKey(@Param("nameTable") String nameTable);
 
