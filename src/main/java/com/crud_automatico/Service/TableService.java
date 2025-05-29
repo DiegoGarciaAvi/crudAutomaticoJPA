@@ -1,5 +1,6 @@
 package com.crud_automatico.Service;
 
+import com.crud_automatico.Persistence.Entity.DatabaseInfoLoggerEntity;
 import com.crud_automatico.Persistence.Proyection.TableProyection;
 import com.crud_automatico.Persistence.Repository.TableRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,15 +12,24 @@ import java.util.List;
 public class TableService {
 
     private final TableRepository tablaRepository;
+    private final DatabaseInfoLogger databaseInfoLogger;
 
     @Autowired
-    public TableService(TableRepository tablaRepository) {
+    public TableService(TableRepository tablaRepository, DatabaseInfoLogger databaseInfoLogger) {
         this.tablaRepository = tablaRepository;
+        this.databaseInfoLogger = databaseInfoLogger;
     }
 
     public List<TableProyection> getAllTables(){
-        return tablaRepository.findAllByName();
 
+        DatabaseInfoLoggerEntity dbInfo= databaseInfoLogger.printDatabaseInfo();
+
+        if(dbInfo.getDbProductName().equals("postgresql")){
+            return tablaRepository.findAllByTablesNamesPostgres();
+        } else if (dbInfo.getDbProductName().equals("mysql")) {
+            return tablaRepository.findAllByTablesNamesMySql(dbInfo.getDbName());
+        }else{
+            throw new RuntimeException("Database not supported: " + dbInfo.getDbProductName());
+        }
     }
-
 }
