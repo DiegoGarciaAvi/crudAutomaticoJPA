@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/columTable")
+@RequestMapping("/colums")
 public class ColumTableController {
 
     private final ColumTableService columTableService;
