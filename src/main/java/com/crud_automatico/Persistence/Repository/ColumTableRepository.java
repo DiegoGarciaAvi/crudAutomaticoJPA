@@ -18,7 +18,7 @@ public interface ColumTableRepository extends JpaRepository<ColumTableEntity,Lon
                     "FROM information_schema.columns \n" +
                     "WHERE table_schema = 'public' \n" +
                     "   AND table_name = :nameTable ; " ,nativeQuery = true)
-    List<ColumTableProjection> findAllColumsNamePostgres(@Param("nameTable") String nameTable);
+    List<ColumTableProjection> findAllColumnsNamePostgres(@Param("nameTable") String nameTable);
 
     @Query(value = "SELECT \n" +
                     "    tc.constraint_name as ConstraintName , \n" +
@@ -38,7 +38,7 @@ public interface ColumTableRepository extends JpaRepository<ColumTableEntity,Lon
                     "WHERE " +
                     "    tc.constraint_schema = 'public' \n" +
                     "    AND tc.table_name=:nameTable;", nativeQuery = true)
-    List<ForeignKeyTableProjection> findAllColumsForeingKeyPostgres(@Param("nameTable") String nameTable);
+    List<ForeignKeyTableProjection> findAllColumnsForeingKeyPostgres(@Param("nameTable") String nameTable);
 
 
     @Query(value = "SELECT " +

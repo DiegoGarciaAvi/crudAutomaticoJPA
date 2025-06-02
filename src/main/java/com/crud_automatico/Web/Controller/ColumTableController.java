@@ -31,7 +31,7 @@ public class ColumTableController {
 
     @GetMapping("/foreignKey/{nameTable}")
     public ResponseEntity<List<ForeignKeyTableProjection>> getAllForeignKeyTable(@PathVariable String nameTable) {
-        List<ForeignKeyTableProjection> columTables = columTableService.getAllForeingKeyTable(nameTable);
+        List<ForeignKeyTableProjection> columTables = columTableService.getAllForeignKeyTable(nameTable);
         return ResponseEntity.ok(columTables);
     }
 

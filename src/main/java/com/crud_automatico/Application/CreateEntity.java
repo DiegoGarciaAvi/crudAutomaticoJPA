@@ -41,7 +41,7 @@ public class CreateEntity {
             throw new RuntimeException("The table does not have columns or does not exist");
         }
 
-        List<ForeignKeyTableProjection> allKeys= columTableService.getAllForeingKeyTable(tableName);
+        List<ForeignKeyTableProjection> allKeys= columTableService.getAllForeignKeyTable(tableName);
         ArrayList<ForeignKeyTableProjection> primaryKeyTableEntities= new ArrayList<>();
         ArrayList<ForeignKeyTableProjection> foreingKeyTableEntities= new ArrayList<>();
 

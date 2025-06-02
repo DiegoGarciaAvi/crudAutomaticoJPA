@@ -26,7 +26,7 @@ public class ColumTableService {
         DatabaseInfoLoggerEntity dbInfo = databaseInfoLogger.printDatabaseInfo();
 
         if(dbInfo.getDbProductName().equals("postgresql")){
-           return columTableRepository.findAllColumsNamePostgres(nameTable);
+           return columTableRepository.findAllColumnsNamePostgres(nameTable);
         } else if (dbInfo.getDbProductName().equals("mysql")) {
             return columTableRepository.findAllNameColumMySql(dbInfo.getDbName(), nameTable);
         } else {
@@ -35,11 +35,11 @@ public class ColumTableService {
 
     }
 
-    public List<ForeignKeyTableProjection> getAllForeingKeyTable(String nameTable) {
+    public List<ForeignKeyTableProjection> getAllForeignKeyTable(String nameTable) {
 
         DatabaseInfoLoggerEntity dbInfo = databaseInfoLogger.printDatabaseInfo();
         if(dbInfo.getDbProductName().equals("postgresql")){
-            return columTableRepository.findAllColumsForeingKeyPostgres(nameTable);
+            return columTableRepository.findAllColumnsForeingKeyPostgres(nameTable);
         } else if (dbInfo.getDbProductName().equals("mysql")) {
             return columTableRepository.findAllColumnsForeignKeyMySql(dbInfo.getDbName(),nameTable);
         } else {

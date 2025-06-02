@@ -9,10 +9,10 @@ import java.io.IOException;
 
 @Service
 public class CreateControllerApi {
-    private final ColumTableService columTableService;
+    private final ColumTableService columnTableService;
 
     public CreateControllerApi(ColumTableService columTableService) {
-        this.columTableService = columTableService;
+        this.columnTableService = columTableService;
     }
 
     public void createController(String serviceName,String entityName, String typeIdEntity){

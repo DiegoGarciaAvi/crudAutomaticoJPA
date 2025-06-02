@@ -19,8 +19,8 @@ public interface TableRepository extends JpaRepository<TableEntity, Long> {
     List<TableProjection> findAllByTablesNamesPostgres();
 
 
-    @Query(value = "SELECT table_name\n" +
-                    "FROM information_schema.tables\n" +
+    @Query(value = "SELECT table_name\n " +
+                    "FROM information_schema.tables\n " +
                     "WHERE table_schema =:dbname \n" +
                     "AND table_type = 'BASE TABLE';", nativeQuery = true)
     List<TableProjection> findAllByTablesNamesMySql(@Param("dbname") String dbname);

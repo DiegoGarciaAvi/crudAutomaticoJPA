@@ -11,11 +11,11 @@ import java.io.IOException;
 @Service
 public class CreateService {
 
-    private final ColumTableService columTableService;
+    private final ColumTableService columnTableService;
 
     @Autowired
     public CreateService(ColumTableService columTableService) {
-        this.columTableService = columTableService;
+        this.columnTableService = columTableService;
     }
 
     public String createService(String repositoryName,String entityName,String typeIdEntity){
