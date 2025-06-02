@@ -24,7 +24,7 @@ public class BuilderApi {
         this.createControllerApi = createControllerApi;
     }
 
-    public void BuilderFilesApi(String tableName) {
+    public void builderFilesApi(String tableName) {
 
         String entityName = tableName.toUpperCase().charAt(0)+tableName.substring(1).toLowerCase() + "Entity";
         if(tableName.contains("_")){

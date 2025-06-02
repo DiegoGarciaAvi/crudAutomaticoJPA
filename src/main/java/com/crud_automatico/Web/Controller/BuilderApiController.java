@@ -20,7 +20,7 @@ public class BuilderApiController {
     @GetMapping("/{tableName}")
     public ResponseEntity<String> createApiFiles(@PathVariable String tableName) {
         try {
-            builderApi.BuilderFilesApi(tableName);
+            builderApi.builderFilesApi(tableName);
             return ResponseEntity.ok("API files created successfully for table: " + tableName);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error creating API files: " + e.getMessage());

@@ -1,7 +1,7 @@
 package com.crud_automatico.Application;
 
-import com.crud_automatico.Persistence.Proyection.ColumTableProyection;
-import com.crud_automatico.Persistence.Proyection.ForeingKeyTableProyection;
+import com.crud_automatico.Persistence.Projection.ColumTableProjection;
+import com.crud_automatico.Persistence.Projection.ForeignKeyTableProjection;
 import com.crud_automatico.Service.ColumTableService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,16 +36,16 @@ public class CreateEntity {
         }
 
         String typeIdEntity = "";
-        List<ColumTableProyection> columTableEntities= columTableService.getAllColumTable(tableName);
+        List<ColumTableProjection> columTableEntities= columTableService.getAllColumTable(tableName);
         if (columTableEntities.isEmpty()) {
             throw new RuntimeException("The table does not have columns or does not exist");
         }
 
-        List<ForeingKeyTableProyection> allKeys= columTableService.getAllForeingKeyTable(tableName);
-        ArrayList<ForeingKeyTableProyection> primaryKeyTableEntities= new ArrayList<>();
-        ArrayList<ForeingKeyTableProyection> foreingKeyTableEntities= new ArrayList<>();
+        List<ForeignKeyTableProjection> allKeys= columTableService.getAllForeingKeyTable(tableName);
+        ArrayList<ForeignKeyTableProjection> primaryKeyTableEntities= new ArrayList<>();
+        ArrayList<ForeignKeyTableProjection> foreingKeyTableEntities= new ArrayList<>();
 
-        for (ForeingKeyTableProyection foreingKey : allKeys) {
+        for (ForeignKeyTableProjection foreingKey : allKeys) {
             if(foreingKey.getConstraintType().equals("FOREIGN KEY")){
                 foreingKeyTableEntities.add(foreingKey);
             } else if (foreingKey.getConstraintType().equals("PRIMARY KEY")) {
@@ -78,14 +78,14 @@ public class CreateEntity {
                     "public class " + entityName+" {\n"
             );
 
-            for (ColumTableProyection columTableEntity : columTableEntities) {
+            for (ColumTableProjection columTableEntity : columTableEntities) {
 
                 String nameColum = columTableEntity.getColumTableName();
                 String typeColum = columTableEntity.getUdtName();
 
-                for (ForeingKeyTableProyection primaryKey: primaryKeyTableEntities){
-                    if(primaryKey.getForeingColumn().equals(nameColum)){
-                        if(typeColum.equals("int2") || typeColum.equals("int4") || typeColum.equals("int8")){
+                for (ForeignKeyTableProjection primaryKey: primaryKeyTableEntities){
+                    if(primaryKey.getForeignColumn().equals(nameColum)){
+                        if(typeColum.equals("int") || typeColum.equals("int2") || typeColum.equals("int4") || typeColum.equals("int8")){
                             file.write("\n\t@Id");
                             file.write("\n\t@GeneratedValue(strategy = GenerationType.AUTO)");
                             typeIdEntity = "Integer";
@@ -136,11 +136,11 @@ public class CreateEntity {
                 file.write("\n\tprivate " + typeColum + " " + nameColum + ";\n");
 
                 if(isForeingKey){
-                    for (ForeingKeyTableProyection foreingKey : foreingKeyTableEntities) {
+                    for (ForeignKeyTableProjection foreingKey : foreingKeyTableEntities) {
 
                         String foreingKeyName = columTableEntity.getColumTableName();
 
-                        if(foreingKey.getForeingColumn().equals(foreingKeyName)){
+                        if(foreingKey.getForeignColumn().equals(foreingKeyName)){
 
                             String nameForeingKey=foreingKeyName;
                             String nameEntityReference="";

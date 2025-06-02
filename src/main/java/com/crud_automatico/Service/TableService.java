@@ -1,7 +1,7 @@
 package com.crud_automatico.Service;
 
 import com.crud_automatico.Persistence.Entity.DatabaseInfoLoggerEntity;
-import com.crud_automatico.Persistence.Proyection.TableProyection;
+import com.crud_automatico.Persistence.Projection.TableProjection;
 import com.crud_automatico.Persistence.Repository.TableRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ public class TableService {
         this.databaseInfoLogger = databaseInfoLogger;
     }
 
-    public List<TableProyection> getAllTables(){
+    public List<TableProjection> getAllTables(){
 
         DatabaseInfoLoggerEntity dbInfo= databaseInfoLogger.printDatabaseInfo();
 

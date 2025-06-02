@@ -1,8 +1,8 @@
 package com.crud_automatico.Service;
 
 import com.crud_automatico.Persistence.Entity.DatabaseInfoLoggerEntity;
-import com.crud_automatico.Persistence.Proyection.ColumTableProyection;
-import com.crud_automatico.Persistence.Proyection.ForeingKeyTableProyection;
+import com.crud_automatico.Persistence.Projection.ColumTableProjection;
+import com.crud_automatico.Persistence.Projection.ForeignKeyTableProjection;
 import com.crud_automatico.Persistence.Repository.ColumTableRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,11 +21,11 @@ public class ColumTableService {
         this.databaseInfoLogger = databaseInfoLogger;
     }
 
-    public List<ColumTableProyection> getAllColumTable(String nameTable) {
+    public List<ColumTableProjection> getAllColumTable(String nameTable) {
 
         DatabaseInfoLoggerEntity dbInfo = databaseInfoLogger.printDatabaseInfo();
 
-        if(dbInfo.getDbProductName().equals("postgres")){
+        if(dbInfo.getDbProductName().equals("postgresql")){
            return columTableRepository.findAllColumsNamePostgres(nameTable);
         } else if (dbInfo.getDbProductName().equals("mysql")) {
             return columTableRepository.findAllNameColumMySql(dbInfo.getDbName(), nameTable);
@@ -35,13 +35,13 @@ public class ColumTableService {
 
     }
 
-    public List<ForeingKeyTableProyection> getAllForeingKeyTable(String nameTable) {
+    public List<ForeignKeyTableProjection> getAllForeingKeyTable(String nameTable) {
 
         DatabaseInfoLoggerEntity dbInfo = databaseInfoLogger.printDatabaseInfo();
-        if(dbInfo.getDbProductName().equals("postgres")){
+        if(dbInfo.getDbProductName().equals("postgresql")){
             return columTableRepository.findAllColumsForeingKeyPostgres(nameTable);
         } else if (dbInfo.getDbProductName().equals("mysql")) {
-            return columTableRepository.findAllColumsForeingKeyMySql(dbInfo.getDbName(),nameTable);
+            return columTableRepository.findAllColumnsForeignKeyMySql(dbInfo.getDbName(),nameTable);
         } else {
             throw new RuntimeException("Database not supported: " + dbInfo.getDbProductName());
         }

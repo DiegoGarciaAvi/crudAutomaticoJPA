@@ -1,7 +1,7 @@
 package com.crud_automatico.Web.Controller;
 
-import com.crud_automatico.Persistence.Proyection.ColumTableProyection;
-import com.crud_automatico.Persistence.Proyection.ForeingKeyTableProyection;
+import com.crud_automatico.Persistence.Projection.ColumTableProjection;
+import com.crud_automatico.Persistence.Projection.ForeignKeyTableProjection;
 import com.crud_automatico.Service.ColumTableService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/colums")
+@RequestMapping("/columns")
 public class ColumTableController {
 
     private final ColumTableService columTableService;
@@ -24,14 +24,14 @@ public class ColumTableController {
     }
 
     @GetMapping("/{nameTable}")
-    public ResponseEntity<List<ColumTableProyection>> getAllColumTable(@PathVariable String nameTable) {
-        List<ColumTableProyection> columTables = columTableService.getAllColumTable(nameTable);
+    public ResponseEntity<List<ColumTableProjection>> getAllColumTable(@PathVariable String nameTable) {
+        List<ColumTableProjection> columTables = columTableService.getAllColumTable(nameTable);
         return ResponseEntity.ok(columTables);
     }
 
-    @GetMapping("/foreingKey/{nameTable}")
-    public ResponseEntity<List<ForeingKeyTableProyection>> getAllForeingKeyTable(@PathVariable String nameTable) {
-        List<ForeingKeyTableProyection> columTables = columTableService.getAllForeingKeyTable(nameTable);
+    @GetMapping("/foreignKey/{nameTable}")
+    public ResponseEntity<List<ForeignKeyTableProjection>> getAllForeignKeyTable(@PathVariable String nameTable) {
+        List<ForeignKeyTableProjection> columTables = columTableService.getAllForeingKeyTable(nameTable);
         return ResponseEntity.ok(columTables);
     }
 
